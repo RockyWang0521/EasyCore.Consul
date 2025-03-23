@@ -1,0 +1,2 @@
+# EasyCore.Consul
+
