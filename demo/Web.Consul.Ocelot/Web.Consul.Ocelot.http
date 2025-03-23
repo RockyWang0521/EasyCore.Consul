@@ -1,0 +1,6 @@
+@Web.Consul.Ocelot_HostAddress = http://localhost:5232
+
+GET {{Web.Consul.Ocelot_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

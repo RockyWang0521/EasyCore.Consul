@@ -1,0 +1,6 @@
+@Web.Consul_HostAddress = http://localhost:6000
+
+GET {{Web.Consul_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
