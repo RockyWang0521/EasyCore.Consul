@@ -131,40 +131,40 @@ namespace EasyCore.Consul.Servers
             return new ConsulReturn { Succeed = true, Message = "Request successful" };
         }
 
-        public async Task<ConsulReturn<TReturn>> ServiceGet<TReturn>(RequestType type, string serviceName, string apiAddr, string? token = null)
+        public async Task<ConsulReturn<TReturn>> ServiceGetAsync<TReturn>(RequestType type, string serviceName, string apiAddr, string? token = null)
             => await SendRequestAsync<TReturn>(HttpMethod.Get, type, serviceName, apiAddr, null, token);
 
-        public async Task<ConsulReturn<TReturn>> ServiceDelete<TReturn>(RequestType type, string serviceName, string apiAddr, string? token = null)
+        public async Task<ConsulReturn<TReturn>> ServiceDeleteAsync<TReturn>(RequestType type, string serviceName, string apiAddr, string? token = null)
             => await SendRequestAsync<TReturn>(HttpMethod.Delete, type, serviceName, apiAddr, null, token);
 
-        public async Task<ConsulReturn<TReturn>> ServicePost<TReturn, TParams>(RequestType type, string serviceName, string apiAddr, TParams? genericParam, string? token = null)
+        public async Task<ConsulReturn<TReturn>> ServicePostAsync<TReturn, TParams>(RequestType type, string serviceName, string apiAddr, TParams? genericParam, string? token = null)
             => await SendRequestAsync<TReturn>(HttpMethod.Post, type, serviceName, apiAddr, genericParam, token);
 
-        public async Task<ConsulReturn<TReturn>> ServicePut<TReturn, TParams>(RequestType type, string serviceName, string apiAddr, TParams? genericParam, string? token = null)
+        public async Task<ConsulReturn<TReturn>> ServicePutAsync<TReturn, TParams>(RequestType type, string serviceName, string apiAddr, TParams? genericParam, string? token = null)
             => await SendRequestAsync<TReturn>(HttpMethod.Put, type, serviceName, apiAddr, genericParam, token);
 
-        public async Task<ConsulReturn<TReturn>> ServicePost<TReturn>(RequestType type, string serviceName, string apiAddr, string? token = null)
+        public async Task<ConsulReturn<TReturn>> ServicePostAsync<TReturn>(RequestType type, string serviceName, string apiAddr, string? token = null)
             => await SendRequestAsync<TReturn>(HttpMethod.Post, type, serviceName, apiAddr, null, token);
 
-        public async Task<ConsulReturn<TReturn>> ServicePut<TReturn>(RequestType type, string serviceName, string apiAddr, string? token = null)
+        public async Task<ConsulReturn<TReturn>> ServicePutAsync<TReturn>(RequestType type, string serviceName, string apiAddr, string? token = null)
             => await SendRequestAsync<TReturn>(HttpMethod.Put, type, serviceName, apiAddr, null, token);
 
-        public async Task<ConsulReturn> ServiceGet(RequestType type, string serviceNamein, string apiAddr, string? token = null) 
+        public async Task<ConsulReturn> ServiceGetAsync(RequestType type, string serviceNamein, string apiAddr, string? token = null) 
             => await SendRequestAsync(HttpMethod.Get, type, serviceNamein, apiAddr, null, token);
 
-        public async Task<ConsulReturn> ServicePost<TParams>(RequestType type, string serviceNamein, string apiAddr, TParams? genericParam, string? token = null)
+        public async Task<ConsulReturn> ServicePostAsync<TParams>(RequestType type, string serviceNamein, string apiAddr, TParams? genericParam, string? token = null)
             => await SendRequestAsync(HttpMethod.Post, type, serviceNamein, apiAddr, genericParam, token);
 
-        public async Task<ConsulReturn> ServicePost(RequestType type, string serviceNamein, string apiAddr, string? token = null)
+        public async Task<ConsulReturn> ServicePostAsync(RequestType type, string serviceNamein, string apiAddr, string? token = null)
             => await SendRequestAsync(HttpMethod.Post, type, serviceNamein, apiAddr, null, token);
 
-        public async Task<ConsulReturn> ServicePut<TParams>(RequestType type, string serviceNamein, string apiAddr, TParams? genericParam, string? token = null)
+        public async Task<ConsulReturn> ServicePutAsync<TParams>(RequestType type, string serviceNamein, string apiAddr, TParams? genericParam, string? token = null)
             => await SendRequestAsync(HttpMethod.Put, type, serviceNamein, apiAddr, genericParam, token);
 
-        public async Task<ConsulReturn> ServicePut(RequestType type, string serviceNamein, string apiAddr, string? token = null)
+        public async Task<ConsulReturn> ServicePutAsync(RequestType type, string serviceNamein, string apiAddr, string? token = null)
             => await SendRequestAsync(HttpMethod.Put, type, serviceNamein, apiAddr, null, token);
 
-        public async Task<ConsulReturn> ServiceDelete(RequestType type, string serviceNamein, string apiAddr, string? token = null)
+        public async Task<ConsulReturn> ServiceDeleteAsync(RequestType type, string serviceNamein, string apiAddr, string? token = null)
             => await SendRequestAsync(HttpMethod.Delete, type, serviceNamein, apiAddr, null, token);
     }
 }

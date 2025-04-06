@@ -20,7 +20,7 @@ namespace Web.Consul.Controllers
         [HttpGet]
         public async Task<ConsulReturn<ConsulServerDto>> GetConsulServer()
         {
-            return await _consulServer.ServiceGet<ConsulServerDto>(RequestType.Http, serverName, "/RESTfulApi?id=1");
+            return await _consulServer.ServiceGetAsync<ConsulServerDto>(RequestType.Http, serverName, "/RESTfulApi?id=1");
         }
 
         [HttpPost]
@@ -33,7 +33,7 @@ namespace Web.Consul.Controllers
                 StringDto = $"this is Web.Consul ConsulServerController.Post method "
             };
 
-            return await _consulServer.ServicePost<string, ConsulServerDto>(RequestType.Http, serverName, "/RESTfulApi", dto);
+            return await _consulServer.ServicePostAsync<string, ConsulServerDto>(RequestType.Http, serverName, "/RESTfulApi", dto);
         }
 
         [HttpPut]
@@ -46,13 +46,13 @@ namespace Web.Consul.Controllers
                 StringDto = $"this is Web.Consul ConsulServerController.Put method "
             };
 
-            return await _consulServer.ServicePut<ConsulServerDto, ConsulServerDto>(RequestType.Http, serverName, "/RESTfulApi", dto);
+            return await _consulServer.ServicePutAsync<ConsulServerDto, ConsulServerDto>(RequestType.Http, serverName, "/RESTfulApi", dto);
         }
 
         [HttpDelete]
         public async Task<ConsulReturn<string>> Delete()
         {
-            return await _consulServer.ServiceDelete<string>(RequestType.Http, serverName, "/RESTfulApi?id=2");
+            return await _consulServer.ServiceDeleteAsync<string>(RequestType.Http, serverName, "/RESTfulApi?id=2");
         }
     }
 }
