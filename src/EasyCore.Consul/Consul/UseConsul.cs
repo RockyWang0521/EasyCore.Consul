@@ -1,4 +1,6 @@
 ﻿using Consul;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 
 namespace EasyCore.Consul
 {
