@@ -11,7 +11,7 @@ namespace Web.Consul.Server
             // Add EasyCoreConsul
             //builder.EasyCoreConsul();
 
-            builder.Services.EasyCoreConsul(builder.Configuration.GetSection("Consul"));
+            builder.Services.EasyCoreConsul(builder.Configuration);
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
