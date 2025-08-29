@@ -122,6 +122,13 @@ namespace EasyCore.Consul.Servers
                 return new ConsulReturn { Succeed = false, Message = "Service not found" };
             }
 
+            if (string.IsNullOrEmpty(token))
+            {
+                var httpContext = _httpContextAccessor.HttpContext;
+
+                if (httpContext is not null) token = httpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            }
+
             var httpClient = GetHttpClient(token);
 
             var request = new HttpRequestMessage(method, serviceUrl);
