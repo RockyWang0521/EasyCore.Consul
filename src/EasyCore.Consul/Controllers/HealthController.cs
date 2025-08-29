@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EasyCore.Consul.Controllers
 {
     [Route("[controller]/[action]")]
-    [ApiController]
+    [ApiController, AllowAnonymous]
     public class HealthController : ControllerBase
     {
         [HttpGet("/healthCheck")]
