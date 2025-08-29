@@ -30,7 +30,7 @@ namespace EasyCore.Consul
 
         public static IServiceCollection EasyCoreConsul(this IServiceCollection service, IConfiguration configuration)
         {
-            service.Configure<ConsulOptions>(configuration);
+            service.Configure<ConsulOptions>(configuration.GetSection("Consul"));
 
             return service;
         }
