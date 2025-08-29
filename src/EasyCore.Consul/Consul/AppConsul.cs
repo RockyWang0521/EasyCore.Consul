@@ -28,6 +28,13 @@ namespace EasyCore.Consul
             return builder.Services;
         }
 
+        public static IServiceCollection EasyCoreConsul(this IServiceCollection service, IConfiguration configuration)
+        {
+            service.Configure<ConsulOptions>(configuration);
+
+            return service;
+        }
+
         public static IServiceCollection EasyCoreConsulCache(this IServiceCollection service)
         {
             service.TryAddSingleton<IConsulCache, ConsulCache>();

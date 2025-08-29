@@ -9,7 +9,9 @@ namespace Web.Consul.Server
             var builder = WebApplication.CreateBuilder(args);
 
             // Add EasyCoreConsul
-            builder.EasyCoreConsul();
+            //builder.EasyCoreConsul();
+
+            builder.Services.EasyCoreConsul(builder.Configuration.GetSection("Consul"));
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
@@ -22,7 +24,9 @@ namespace Web.Consul.Server
             app.UseAuthorization();
 
             // Use EasyCoreConsul
-            app.UseEasyCoreConsul();
+            //app.UseEasyCoreConsul();
+
+            UseConsul.UseEasyCoreConsul(builder.Configuration, app.Lifetime);
 
             app.MapControllers();
             app.Run();
