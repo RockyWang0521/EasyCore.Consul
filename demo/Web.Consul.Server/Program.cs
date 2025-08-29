@@ -9,7 +9,7 @@ namespace Web.Consul.Server
             var builder = WebApplication.CreateBuilder(args);
 
             // Add EasyCoreConsul
-            builder.EasyCoreConsul(args);
+            builder.EasyCoreConsul();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();

@@ -9,7 +9,7 @@ namespace Web.Consul
             var builder = WebApplication.CreateBuilder(args);
 
             // Add EasyCoreConsul
-            builder.EasyCoreConsul(args)
+            builder.EasyCoreConsul()
                 .EasyCoreConsulCache()
                 .EasyCoreConsulLocking()
                 .EasyCoreConsulServer();
