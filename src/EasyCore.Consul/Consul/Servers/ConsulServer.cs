@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text;
@@ -9,14 +10,20 @@ namespace EasyCore.Consul.Servers
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
         private readonly ConsulOptions _options;
 
         const string clientName = "ConsulServer";
 
-        public ConsulServer(IHttpClientFactory httpClientFactory,
+        public ConsulServer(
+            IHttpClientFactory httpClientFactory,
+            IHttpContextAccessor httpContextAccessor,
             IOptions<ConsulOptions> options)
         {
             _httpClientFactory = httpClientFactory;
+
+            _httpContextAccessor = httpContextAccessor;
 
             _options = options.Value;
         }
@@ -72,6 +79,13 @@ namespace EasyCore.Consul.Servers
             if (serviceUrl is null)
             {
                 return new ConsulReturn<TReturn> { Succeed = false, Message = "Service not found" };
+            }
+
+            if (string.IsNullOrEmpty(token))
+            {
+                var httpContext = _httpContextAccessor.HttpContext;
+
+                if (httpContext is not null) token = httpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");         
             }
 
             var httpClient = GetHttpClient(token);
@@ -149,7 +163,7 @@ namespace EasyCore.Consul.Servers
         public async Task<ConsulReturn<TReturn>> ServicePutAsync<TReturn>(RequestType type, string serviceName, string apiAddr, string? token = null)
             => await SendRequestAsync<TReturn>(HttpMethod.Put, type, serviceName, apiAddr, null, token);
 
-        public async Task<ConsulReturn> ServiceGetAsync(RequestType type, string serviceNamein, string apiAddr, string? token = null) 
+        public async Task<ConsulReturn> ServiceGetAsync(RequestType type, string serviceNamein, string apiAddr, string? token = null)
             => await SendRequestAsync(HttpMethod.Get, type, serviceNamein, apiAddr, null, token);
 
         public async Task<ConsulReturn> ServicePostAsync<TParams>(RequestType type, string serviceNamein, string apiAddr, TParams? genericParam, string? token = null)

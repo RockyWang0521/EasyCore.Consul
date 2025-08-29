@@ -53,6 +53,8 @@ namespace EasyCore.Consul
         {
             service.AddHttpClient("ConsulServer");
 
+            service.AddHttpContextAccessor();
+
             service.TryAddSingleton<IConsulServer, ConsulServer>();
 
             return service;
