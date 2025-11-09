@@ -1,9 +1,8 @@
-﻿namespace Web.Consul.Server.Pojo
+﻿namespace Web.Consul.Server.Pojo;
+
+public class ConsulServerDto
 {
-    public class ConsulServerDto
-    {
-        public string StringDto { get; set; }
-        public int IntDto { get; set; }
-        public bool BoolDto { get; set; }
-    }
+    public string StringDto { get; set; } = string.Empty;
+    public int IntDto { get; set; }
+    public bool BoolDto { get; set; }
 }

@@ -1,34 +1,22 @@
 using EasyCore.Consul;
 
-namespace Web.Consul
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
-            // Add EasyCoreConsul
-            builder.EasyCoreConsul()
-                .EasyCoreConsulCache()
-                .EasyCoreConsulLocking()
-                .EasyCoreConsulServer();
+builder.AddEasyCoreConsul()
+    .AddEasyCoreConsulCache()
+    .AddEasyCoreConsulLocking()
+    .AddEasyCoreConsulServer();
 
-            builder.Services.AddControllers();
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-            var app = builder.Build();
+var app = builder.Build();
 
-            app.UseSwagger();
-            app.UseSwaggerUI();
-            app.UseAuthorization();
+app.UseSwagger();
+app.UseSwaggerUI();
+app.UseAuthorization();
 
-            // Use EasyCoreConsul
-            app.UseEasyCoreConsul();
-
-            app.MapControllers();
-            app.Run();
-        }
-    }
-}
+app.UseEasyCoreConsul();
+app.MapControllers();
+app.Run();

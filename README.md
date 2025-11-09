@@ -1,213 +1,418 @@
-# EasyCore.Consul
+# 🧭 EasyCore.Consul
 
-Consul是一种用于服务发现、服务注册和配置管理的开源工具，在微服务架构中有着广泛的应用。
+> **EasyCore.Consul** 是面向 .NET 8 的生产级 [HashiCorp Consul](https://www.consul.io/) 集成库。提供服务注册与健康检查、KV 存储、分布式锁、健康实例发现与负载均衡，以及服务间 HTTP 调用能力。
 
-核心功能
+![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)
+![C#](https://img.shields.io/badge/C%23-12-239120?logo=csharp)
+![Consul](https://img.shields.io/badge/Consul-1.7+-e03875?logo=consul&logoColor=white)
+![Features](https://img.shields.io/badge/Features-Register%20%7C%20KV%20%7C%20Lock%20%7C%20Invoke-blueviolet)
+![License](https://img.shields.io/badge/License-MIT%20OR%20Apache--2.0-yellow)
+![Version](https://img.shields.io/badge/Version-8.1.0-blue)
 
-服务发现：Consul提供了通过DNS或者HTTP接口的方式来注册服务和发现服务的功能。这使得外部的服务能够轻松地找到它所依赖的其他服务。
-健康检查：Consul的Client可以提供任意数量的健康检查，既可以与给定的服务相关联（如“webserver是否返回200 OK”），也可以与本地节点相关联（如“内存利用率是否低于90%”）。操作员可以使用这些信息来监视集群的健康状况，服务发现组件可以使用这些信息将流量从不健康的主机路由出去。
-Key/Value存储：应用程序可以根据自己的需要使用Consul提供的Key/Value存储。Consul提供了简单易用的HTTP接口，结合其他工具可以实现动态配置、功能标记、领袖选举等功能。
-安全服务通信：Consul可以为服务生成和分发TLS证书，以建立相互的TLS连接。意图可用于定义允许哪些服务通信。服务分割可以很容易地进行管理，其目的是可以实时更改的，而不是使用复杂的网络拓扑和静态防火墙规则。
-架构组件
+---
 
-代理（Agent）：代理是Consul集群的每个成员上长时间运行的守护程序。它可以以客户端或服务器模式运行。所有节点都必须运行代理，因此将节点称为客户端或服务器更简单。代理能够以客户端或服务器模式运行，并且可以运行DNS或HTTP接口，并负责运行检查并保持服务同步。
-数据中心（Datacenter）：数据中心被定义为专用、低延迟和高带宽的网络环境。这排除了通过公共互联网的通信，但出于我们的目的，单个EC2区域内的多个可用区域将被视为单个数据中心的一部分。
-共识（Consensus）：在Consul中，共识表示对当选领导者的协议以及对交易顺序的协议。作为一个分布式系统，Consul使用Raft算法来实现共识，确保复制状态机的一致性。
-使用场景
+## 🌍 Language
 
-服务发现：在微服务架构中，服务实例通常是动态创建和销毁的。Consul作为服务注册中心，服务地址被注册到Consul中以后，可以使用Consul提供的DNS、HTTP接口查询，支持Health Check。
-服务隔离：Consul支持以服务为单位设置访问策略，能同时支持经典的平台和新兴的平台，支持TLS证书分发，service-to-service加密。
-服务配置：Consul提供Key/Value数据存储功能，并且能将变动迅速地通知出去，通过工具consul-template可以更方便地实时渲染配置文件。
+- 🇨🇳 **中文（当前文档）**
+- 🇺🇸 English: [README.en.md](README.en.md)
 
-EasyCore.Consul 提供了简单快捷的应用。
+---
 
-1.注册consul
+## 📚 目录
 
+### 🗺️ 第一部分：总览与架构
+- [1. 🎯 项目定位](#1-项目定位)
+- [2. 🏗️ 架构与模块关系](#2-架构与模块关系)
+- [3. 📦 NuGet / 项目清单](#3-nuget--项目清单)
+- [4. 📊 能力对比](#4-能力对比)
+
+### 🚀 第二部分：快速上手
+- [5. 💻 环境要求](#5-环境要求)
+- [6. 📥 安装](#6-安装)
+- [7. ⚡ 三分钟快速开始](#7-三分钟快速开始)
+- [8. ⚙️ 配置项完整说明](#8-配置项完整说明)
+
+### 🧩 第三部分：KV · 锁 · 服务调用
+- [9. 🗄️ KV 缓存](#9-kv-缓存)
+- [10. 🔒 分布式锁](#10-分布式锁)
+- [11. 🔗 服务发现与调用](#11-服务发现与调用)
+
+### 🏭 第四部分：Demo 与生产
+- [12. 🧪 Demo 项目](#12-demo-项目)
+- [13. 🔄 从旧版迁移](#13-从旧版迁移)
+- [14. ✅ 生产清单](#14-生产清单)
+- [15. ❓ FAQ](#15-faq)
+- [16. 📄 License](#16-license)
+
+---
+
+## 1. 项目定位
+
+EasyCore.Consul 解决「在 ASP.NET Core 里安全、可运维地接入 Consul」的问题：
+
+| 图标 | 痛点 | EasyCore.Consul 做法 |
+|---|---|---|
+| ♻️ | 手写注册/注销易漏 | `IHostedService` 异步注册，停机优雅注销 |
+| ❤️ | Catalog 可能打到不健康实例 | Health API + `PassingOnly` |
+| 🔐 | HttpClient 改 DefaultHeaders 不安全 | 按请求设置 Authorization |
+| ⏱️ | 分布式锁无续约 | Session TTL + `RenewPeriodic` |
+| 🛡️ | 配置错误启动后才发现 | `ValidateOnStart` 选项校验 |
+| 🧱 | 扩展点耦合 | 注册 / KV / 锁 / 调用按需 `Add*` |
+
+### 1.1 ✨ 设计原则
+
+| 图标 | 原则 | 说明 |
+|---|---|---|
+| 🚀 | **低摩擦接入** | 几个扩展方法即可跑通注册与健康检查 |
+| 🧩 | **按需组合** | Cache / Locking / Server 独立注册 |
+| 📡 | **失败可感知** | 注册失败抛错；调用返回 `Succeed` / `Message` |
+| 🏭 | **生产默认** | 健康实例发现、稳定 ServiceId、ACL Token 支持 |
+| 🔙 | **向后兼容** | 保留 `EasyCoreConsul*` / `ServiceIP` 等别名 |
+
+### 1.2 📁 解决方案目录
+
+```text
+EasyCore.Consul/
+├── src/EasyCore.Consul/           # 核心库
+│   ├── Configuration/            # Options + 校验
+│   ├── Registration/             # HostedService 注册
+│   ├── Cache/                    # KV
+│   ├── Locking/                  # 分布式锁
+│   ├── Discovery/                # 健康发现 + 负载均衡
+│   ├── Invocation/               # 服务间 HTTP 调用
+│   └── DependencyInjection/      # Add* / Use*
+├── demo/
+│   ├── Web.Consul/               # :5057 — KV / 锁 / 调用
+│   ├── Web.Consul.Server/        # :5058 — 下游 API
+│   └── Web.Consul.Ocelot/        # Ocelot + Consul
+├── tests/EasyCore.Consul.Tests/
+└── docs/svg/                     # README 架构图
 ```
-public class Program
+
+---
+
+## 2. 架构与模块关系
+
+### 2.1 🖼️ 组件关系图
+
+![architecture-cn](https://gitee.com/wzhy-0521/easy-core.-consul/raw/master/docs/svg/architecture-cn.svg)
+
+### 2.2 🔁 服务生命周期
+
+![sequence-cn](https://gitee.com/wzhy-0521/easy-core.-consul/raw/master/docs/svg/sequence-cn.svg)
+
+### 2.3 📜 数据流（文字版）
+
+```text
+[ASP.NET Core Host]
+        │
+        ▼
+ AddEasyCoreConsul ──► ConsulOptions (ValidateOnStart)
+        │
+        ├─ HostedService ──► Agent.ServiceRegister / Deregister
+        │
+        ├─ IConsulCache ────► KV Put / Get / Delete
+        ├─ IConsulLocking ──► Session + Acquire / Renew / Release
+        └─ IConsulServer ───► Health.Service → LB → HttpClient
+                                    │
+                                    ▼
+                              Downstream Service
+```
+
+---
+
+## 3. NuGet / 项目清单
+
+| 图标 | 包名 / 项目 | 职责 | 是否必须 |
+|---|---|---|---|
+| 📚 | `EasyCore.Consul` | 注册、KV、锁、发现、调用 | ✅ |
+| 🖥️ | `demo/Web.Consul` | 客户端示例 | 🧪 示例 |
+| 🖥️ | `demo/Web.Consul.Server` | 下游服务示例 | 🧪 示例 |
+| 🌐 | `demo/Web.Consul.Ocelot` | 网关 + Consul 发现 | 🧪 示例 |
+| 🧪 | `tests/EasyCore.Consul.Tests` | 单元测试 | 🛠️ 开发 |
+
+---
+
+## 4. 能力对比
+
+| 图标 | 能力 | 说明 | 接口 |
+|---|---|---|---|
+| 📝 | **服务注册** | 启动注册 / 停机注销 / HTTP 健康检查 | `AddEasyCoreConsul` |
+| 🗄️ | **KV 存储** | 字符串与强类型 JSON | `IConsulCache` |
+| 🔒 | **分布式锁** | TTL 续约、`await using` 租约 | `IConsulLocking` |
+| 🔎 | **服务发现** | 仅健康实例（默认） | `IConsulServiceDiscovery` |
+| ⚖️ | **负载均衡** | RoundRobin（默认）/ Random | `LoadBalance` |
+| 🔗 | **服务调用** | GET/POST/PUT/DELETE + Bearer | `IConsulServer` |
+| 🌉 | **网关** | Ocelot Provider（Demo） | `Web.Consul.Ocelot` |
+
+### 4.1 🌳 选型决策树
+
+```text
+需要本进程注册到 Consul？
+├── ✅ 是 → AddEasyCoreConsul + Register=true + HealthCheck.Http
+└── ❌ 否 → AddEasyCoreConsul + Register=false（仅消费）
+
+还需要？
+├── 🗄️ 配置 / 缓存 → AddEasyCoreConsulCache
+├── 🔒 互斥临界区 → AddEasyCoreConsulLocking
+└── 🔗 调其他服务 → AddEasyCoreConsulServer
+```
+
+---
+
+## 5. 环境要求
+
+| 图标 | 项 | 要求 |
+|---|---|---|
+| 🟣 | .NET | 8.0+ |
+| 🌐 | 宿主 | ASP.NET Core（Web / API） |
+| 🧭 | Consul | Agent 可达（默认 `http://127.0.0.1:8500`） |
+| 📦 | 依赖 | `Consul` NuGet（由本包引入） |
+
+---
+
+## 6. 安装
+
+```bash
+dotnet add package EasyCore.Consul
+```
+
+本地源码引用：
+
+```xml
+<ProjectReference Include="..\..\src\EasyCore.Consul\EasyCore.Consul.csproj" />
+```
+
+---
+
+## 7. 三分钟快速开始
+
+### 7️⃣.1️⃣ 📝 配置 `appsettings.json`
+
+```json
 {
-    public static void Main(string[] args)
-    {
-        var builder = WebApplication.CreateBuilder(args);
-
-        // Add EasyCoreConsul
-        builder.EasyCoreConsul(args);
-
-        builder.Services.AddControllers();
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
-
-        var app = builder.Build();
-
-        app.UseSwagger();
-        app.UseSwaggerUI();
-        app.UseAuthorization();
-
-        // Use EasyCoreConsul
-        app.UseEasyCoreConsul();
-
-        app.MapControllers();
-        app.Run();
+  "Consul": {
+    "ConsulAddress": "http://127.0.0.1:8500",
+    "Token": null,
+    "Register": true,
+    "ServiceName": "my-service",
+    "ServiceAddress": "127.0.0.1",
+    "ServicePort": 5057,
+    "LoadBalance": "RoundRobin",
+    "PassingOnly": true,
+    "HealthCheck": {
+      "Http": "http://127.0.0.1:5057/healthCheck",
+      "Interval": "00:00:10",
+      "Timeout": "00:00:05",
+      "DeregisterCriticalServiceAfter": "00:01:00"
     }
+  }
 }
 ```
-服务就会注册至consul中。
 
-2.注册consul缓存
+### 7️⃣.2️⃣ 🔌 注册服务
 
-```
-builder.EasyCoreConsul(args).EasyCoreConsulCache();
-```
-使用consul缓存
+```csharp
+using EasyCore.Consul;
 
-```
- [Route("api/[controller]")]
- [ApiController]
- public class ConsulCacheController : ControllerBase
- {
-     private readonly IConsulCache _consulCache;
+var builder = WebApplication.CreateBuilder(args);
 
-     public ConsulCacheController(IConsulCache consulCache) => _consulCache = consulCache;
+builder.AddEasyCoreConsul()
+    .AddEasyCoreConsulCache()
+    .AddEasyCoreConsulLocking()
+    .AddEasyCoreConsulServer();
 
-     [HttpPost("string:{key}/{value}")]
-     public async Task<WriteResult<bool>> Post(string key, string value)
-     {
-         return await _consulCache.KVPut(key, value);
-     }
+builder.Services.AddControllers();
 
-     [HttpPost("dto:{key}")]
-     public async Task<WriteResult<bool>> Post(string key, ConsulCacheDto value)
-     {
-         return await _consulCache.KVPut(key, value);
-     }
+var app = builder.Build();
 
-     [HttpGet("string:{key}")]
-     public async Task<string> KVGet(string key)
-     {
-         return await _consulCache.KVGet<string>(key);
-     }
-
-     [HttpGet("dto:{key}")]
-     public async Task<ConsulCacheDto> KVGetDto(string key)
-     {
-         return await _consulCache.KVGet<ConsulCacheDto>(key);
-     }
-
-     [HttpDelete("{key}")]
-     public async Task<WriteResult<bool>> Delete(string key)
-     {
-         return await _consulCache.KVDelete(key);
-     }
- }
-```
-3.注册consul锁
-
-```
-builder.EasyCoreConsul(args).EasyCoreConsulLocking();
-```
-使用consul锁
-
-```
- [Route("api/[controller]")]
- [ApiController]
- public class ConsulLockingController : ControllerBase
- {
-     private readonly IConsulLocking _consulLocking;
-     private readonly ILogger<ConsulLockingController> _logger;
-
-     public ConsulLockingController(IConsulLocking consulLocking,
-             ILogger<ConsulLockingController> logger)
-     {
-         _consulLocking = consulLocking;
-         _logger = logger;
-     }
-
-     [HttpPost("lock:{lockKey}/{lockTTL}")]
-     public async Task ConsulLocking(string lockKey, int lockTTL)
-     {
-         string? sessionId = await _consulLocking.AcquireLock(lockKey, lockTTL);
-         if (sessionId != null)
-         {
-             _logger.LogInformation($"Lock acquired with session id: {sessionId}");
-             await Task.Delay(5000);
-             await _consulLocking.ReleaseLock(lockKey, sessionId);
-         }
-     }
-
-     [HttpPost("ExecuteLocked:{lockKey}/{lockTTL}")]
-     public async Task ExecuteLocked(string lockKey, int lockTTL)
-     {
-         await _consulLocking.ExecuteLocked(lockKey, lockTTL, async () =>
-         {
-             _logger.LogInformation("Executing critical section under lock.");
-             await Task.Delay(5000);
-         });
-
-         _logger.LogInformation("Execution finished.");
-     }
- }
-```
-4.注册consul服务间调用
-
-```
-builder.EasyCoreConsul(args).EasyCoreConsulServer();
-```
-使用consul服务间调用
-
-```
-  [Route("api/[controller]")]
-  [ApiController]
-  public class ConsulServerController : ControllerBase
-  {
-      private readonly IConsulServer _consulServer;
-
-      const string serverName = "Web.Consul.Server";
-
-      public ConsulServerController(IConsulServer consulServer)
-          => _consulServer = consulServer;
-
-
-      [HttpGet]
-      public async Task<ConsulReturn<ConsulServerDto>> GetConsulServer()
-      {
-          return await _consulServer.ServiceGet<ConsulServerDto>(RequestType.Http, serverName, "/RESTfulApi?id=1");
-      }
-
-      [HttpPost]
-      public async Task<ConsulReturn<string>> Post()
-      {
-          var dto = new ConsulServerDto()
-          {
-              BoolDto = true,
-              IntDto = 200,
-              StringDto = $"this is Web.Consul ConsulServerController.Post method "
-          };
-
-          return await _consulServer.ServicePost<string, ConsulServerDto>(RequestType.Http, serverName, "/RESTfulApi", dto);
-      }
-
-      [HttpPut]
-      public async Task<ConsulReturn<ConsulServerDto>> Put()
-      {
-          var dto = new ConsulServerDto
-          {
-              BoolDto = true,
-              IntDto = 300,
-              StringDto = $"this is Web.Consul ConsulServerController.Put method "
-          };
-
-          return await _consulServer.ServicePut<ConsulServerDto, ConsulServerDto>(RequestType.Http, serverName, "/RESTfulApi", dto);
-      }
-
-      [HttpDelete]
-      public async Task<ConsulReturn<string>> Delete()
-      {
-          return await _consulServer.ServiceDelete<string>(RequestType.Http, serverName, "/RESTfulApi?id=2");
-      }
-  }
+app.UseEasyCoreConsul(); // 映射 /healthCheck；注册由 HostedService 完成
+app.MapControllers();
+app.Run();
 ```
 
+打开 Consul UI：`http://127.0.0.1:8500`，即可看到已注册服务。
 
+---
 
+## 8. 配置项完整说明
 
+| 图标 | 配置 | 说明 |
+|---|---|---|
+| 🌐 | `ConsulAddress` | Consul HTTP API 地址 |
+| 🔑 | `Token` | 可选 ACL Token |
+| 🏢 | `Datacenter` | 可选数据中心 |
+| 📝 | `Register` | 是否自注册（默认 `true`） |
+| 🏷️ | `ServiceName` | 逻辑服务名 |
+| 🆔 | `ServiceId` | 实例 ID；空则 `{ServiceName}-{MachineName}-{Port}` |
+| 📍 | `ServiceAddress` / `ServiceIP` | 对外宣告地址 |
+| 🔢 | `ServicePort` | 对外宣告端口 |
+| 🏷️ | `Tags` / `Meta` | 服务标签与元数据 |
+| ❤️ | `HealthCheck.Http` / `ServiceHealthCheck` | HTTP 健康检查 URL |
+| ⏱️ | `HealthCheck.Interval` | 检查间隔（默认 10s） |
+| ⏳ | `HealthCheck.Timeout` | 超时（默认 5s） |
+| 🧹 | `HealthCheck.DeregisterCriticalServiceAfter` | 临界后自动注销 |
+| ⚖️ | `LoadBalance` | `RoundRobin` / `Random` |
+| ✅ | `PassingOnly` | 仅发现通过健康检查的实例（默认 `true`） |
 
+---
+
+## 9. KV 缓存
+
+```csharp
+public class DemoController(IConsulCache cache) : ControllerBase
+{
+    [HttpPost("{key}")]
+    public Task<bool> Put(string key, [FromBody] MyDto dto, CancellationToken ct)
+        => cache.PutAsync(key, dto, ct);
+
+    [HttpGet("{key}")]
+    public Task<MyDto?> Get(string key, CancellationToken ct)
+        => cache.GetAsync<MyDto>(key, ct);
+
+    [HttpGet("raw/{key}")]
+    public Task<string?> GetRaw(string key, CancellationToken ct)
+        => cache.GetStringAsync(key, ct);
+}
+```
+
+| 图标 | API | 说明 |
+|---|---|---|
+| ⬆️ | `PutAsync` / `KVPut` | 写入字符串或对象（JSON） |
+| 📄 | `GetStringAsync` | 原文字符串，不做 JSON 反序列化 |
+| 📥 | `GetAsync<T>` / `KVGet` | 强类型读取；`T=string` 时同样按原文返回 |
+| 🗑️ | `DeleteAsync` / `KVDelete` | 删除键 |
+
+---
+
+## 10. 分布式锁
+
+```csharp
+// 推荐：自动获取 / 续约 / 释放
+await locking.ExecuteLockedAsync("orders:pay", ttlSeconds: 30, async ct =>
+{
+    await DoWorkAsync(ct);
+}, cancellationToken);
+
+// 或手动租约
+await using var lease = await locking.TryAcquireAsync(
+    "orders:pay", TimeSpan.FromSeconds(30), ct);
+if (lease is null) return Conflict();
+```
+
+| 图标 | API | 说明 |
+|---|---|---|
+| ✋ | `TryAcquireAsync` | 返回 `IConsulLock`（含 Session 续约），失败返回 `null` |
+| ▶️ | `ExecuteLockedAsync` | `Func<CancellationToken, Task>`，正确 await |
+| 🔓 | `AcquireLock` / `ReleaseLock` | 兼容旧版（无自动续约） |
+
+> ⚠️ 持锁期间请保证 TTL 合理；租约对象会续约 Session，请务必 `await using` 释放。
+
+---
+
+## 11. 服务发现与调用
+
+```csharp
+var result = await consulServer.ServiceGetAsync<OrderDto>(
+    RequestScheme.Http,
+    serviceName: "order-service",
+    apiPath: "/api/orders/1",
+    cancellationToken: ct);
+
+if (!result.Succeed) return Problem(result.Message);
+return Ok(result.Values);
+```
+
+| 图标 | 方法 | 说明 |
+|---|---|---|
+| 📥 | `ServiceGetAsync` | GET |
+| 📤 | `ServicePostAsync` | POST（可带 body） |
+| ✏️ | `ServicePutAsync` | PUT |
+| 🗑️ | `ServiceDeleteAsync` | DELETE |
+
+发现链路：`Health.Service` → 负载均衡 → `IHttpClientFactory` 发请求。默认只选 **passing** 实例。
+
+---
+
+## 12. Demo 项目
+
+![demo-topology-cn](https://gitee.com/wzhy-0521/easy-core.-consul/raw/master/docs/svg/demo-topology-cn.svg)
+
+| 图标 | 项目 | 端口 | 角色 | 命令 |
+|---|---|---|---|---|
+| 🖥️ | [`Web.Consul`](demo/Web.Consul) | 5057 | KV / 锁 / 服务调用 | `dotnet run --project demo/Web.Consul` |
+| 🧰 | [`Web.Consul.Server`](demo/Web.Consul.Server) | 5058 | 下游 REST API | `dotnet run --project demo/Web.Consul.Server` |
+| 🌉 | [`Web.Consul.Ocelot`](demo/Web.Consul.Ocelot) | — | Ocelot 网关 | `dotnet run --project demo/Web.Consul.Ocelot` |
+
+```bash
+# 1️⃣ 启动 Consul Agent（HTTP :8500）
+# 2️⃣ 启动下游
+dotnet run --project demo/Web.Consul.Server
+# 3️⃣ 启动客户端
+dotnet run --project demo/Web.Consul
+# 4️⃣ 打开 http://127.0.0.1:8500 查看注册结果
+```
+
+---
+
+## 13. 从旧版迁移
+
+**8.1.0** 相对早期封装为破坏性增强（推荐升级）：
+
+| 图标 | 旧版 | 8.1 |
+|---|---|---|
+| ⛔ | `UseEasyCoreConsul` 内 `.Wait()` | `IHostedService` 异步注册 |
+| ❤️ | Catalog 发现 | Health API + `PassingOnly` |
+| 🔒 | `ExecuteLocked(Action)` | 优先 `ExecuteLockedAsync(Func<..., Task>)` |
+| 📦 | `WriteResult<bool>` 直接暴露 | 返回 `bool`（语义更清晰） |
+| ⚙️ | `ServiceHealthCheck` 扁平字段 | `HealthCheck` 对象（旧字段仍可用） |
+| 🔙 | `EasyCoreConsul*` | 保留；推荐 `AddEasyCoreConsul*` |
+
+---
+
+## 14. 生产清单
+
+- [ ] 🧭 Consul 地址使用内网 DNS / VIP，配置 ACL `Token`
+- [ ] 📍 `ServiceAddress` 使用可被其他节点访问的 IP（勿用仅本机可达地址）
+- [ ] ⏳ `HealthCheck.Timeout` 保持合理（秒级），避免过长超时
+- [ ] 🆔 多实例设置稳定 `ServiceId` 或接受默认 `{Name}-{Machine}-{Port}`
+- [ ] ✅ 服务调用侧开启 `PassingOnly=true`
+- [ ] 🔒 锁的 TTL 与业务临界区时长匹配，始终释放租约
+- [ ] 📡 连接失败时关注启动日志（注册失败会使 Host 启动失败）
+- [ ] 🧪 CI 执行 `dotnet test`（本仓库已提供 workflow）
+
+---
+
+## 15. FAQ
+
+**Q: 启动报 Options 校验失败？**  
+A: `Register=true` 时必须配置 `ServiceName`、`ServiceAddress`、`ServicePort` 与合法 `ConsulAddress`。
+
+**Q: Consul UI 能看到服务但调用失败？**  
+A: 检查健康检查是否 passing；确认 `ServiceAddress` 对调用方可达；确认下游已启动。
+
+**Q: 只想用 KV，不想注册自己？**  
+A: `Register: false`，再 `AddEasyCoreConsulCache()`。
+
+**Q: 锁拿不到？**  
+A: 可能被其他持有者占用，或 Session/Acquire 失败。查看日志；使用 `TryAcquireAsync` 处理 `null`。
+
+**Q: Ocelot Demo 与本库关系？**  
+A: Ocelot 通过 `Ocelot.Provider.Consul` 自行发现；本库负责业务侧注册与调用。可同时使用。
+
+---
+
+## 16. License
+
+MIT OR Apache-2.0 — 详见 [LICENSE](LICENSE)。
+
+---
+
+## 🤝 贡献
+
+1. 🍴 Fork 并创建特性分支  
+2. 🧪 在 `tests/EasyCore.Consul.Tests` 补充测试  
+3. ✅ 执行 `dotnet test` 与 `dotnet build EasyCore.Consul.sln`  
+4. 📬 提交 Pull Request  
+
+欢迎 Issue / PR 🚀

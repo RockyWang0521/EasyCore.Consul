@@ -1,0 +1,27 @@
+name: ci
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore EasyCore.Consul.sln
+
+      - name: Build
+        run: dotnet build EasyCore.Consul.sln --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test tests/EasyCore.Consul.Tests/EasyCore.Consul.Tests.csproj --configuration Release --no-restore --verbosity normal

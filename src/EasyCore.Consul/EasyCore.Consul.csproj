@@ -4,40 +4,43 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageId>EasyCore.Consul</PackageId>
     <PackageIcon>EasyCoreLogo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <IncludeSymbols>False</IncludeSymbols>
-    <RepositoryType>gitee</RepositoryType>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <RepositoryType>git</RepositoryType>
     <Authors>WZHY</Authors>
-    <Description>.net core consul microservice.</Description>
+    <Description>Production-ready .NET Consul integration: service registration, discovery, KV store, distributed locking, and inter-service invocation.</Description>
     <PackageProjectUrl>https://gitee.com/wzhy-0521/easy-core.-consul.git</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT OR Apache-2.0</PackageLicenseExpression>
-    <AssemblyVersion>8.0.0.0</AssemblyVersion>
-    <FileVersion>8.0.0.0</FileVersion>
-    <Version>8.0.0</Version>
+    <PackageTags>consul;microservice;service-discovery;distributed-lock;kv</PackageTags>
+    <Version>8.1.0</Version>
+    <AssemblyVersion>8.1.0.0</AssemblyVersion>
+    <FileVersion>8.1.0.0</FileVersion>
     <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Program.cs" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\png\EasyCoreLogo.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-    <None Include="..\..\README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
+    <None Include="..\..\png\EasyCoreLogo.png" Pack="True" PackagePath="\" />
+    <None Include="..\..\README.md" Pack="True" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Consul" Version="1.7.14.7" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="EasyCore.Consul.Tests" />
   </ItemGroup>
 
 </Project>

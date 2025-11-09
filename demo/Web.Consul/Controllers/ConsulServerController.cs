@@ -1,58 +1,54 @@
-﻿using EasyCore.Consul.Servers;
-using Microsoft.AspNetCore.Http;
+﻿using EasyCore.Consul.Discovery;
+using EasyCore.Consul.Invocation;
 using Microsoft.AspNetCore.Mvc;
 using Web.Consul.Pojo;
 
-namespace Web.Consul.Controllers
+namespace Web.Consul.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class ConsulServerController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ConsulServerController : ControllerBase
+    private readonly IConsulServer _consulServer;
+    private const string ServerName = "Web.Consul.Server";
+
+    public ConsulServerController(IConsulServer consulServer) => _consulServer = consulServer;
+
+    [HttpGet]
+    public Task<ServiceCallResult<ConsulServerDto>> Get(CancellationToken cancellationToken)
+        => _consulServer.ServiceGetAsync<ConsulServerDto>(
+            RequestScheme.Http, ServerName, "/RESTfulApi?id=1", cancellationToken: cancellationToken);
+
+    [HttpPost]
+    public Task<ServiceCallResult<string>> Post(CancellationToken cancellationToken)
     {
-        private readonly IConsulServer _consulServer;
-
-        const string serverName = "Web.Consul.Server";
-
-        public ConsulServerController(IConsulServer consulServer)
-            => _consulServer = consulServer;
-
-
-        [HttpGet]
-        public async Task<ConsulReturn<ConsulServerDto>> GetConsulServer()
+        var dto = new ConsulServerDto
         {
-            return await _consulServer.ServiceGetAsync<ConsulServerDto>(RequestType.Http, serverName, "/RESTfulApi?id=1");
-        }
+            BoolDto = true,
+            IntDto = 200,
+            StringDto = "this is Web.Consul ConsulServerController.Post method"
+        };
 
-        [HttpPost]
-        public async Task<ConsulReturn<string>> Post()
-        {
-            var dto = new ConsulServerDto()
-            {
-                BoolDto = true,
-                IntDto = 200,
-                StringDto = $"this is Web.Consul ConsulServerController.Post method "
-            };
-
-            return await _consulServer.ServicePostAsync<string, ConsulServerDto>(RequestType.Http, serverName, "/RESTfulApi", dto);
-        }
-
-        [HttpPut]
-        public async Task<ConsulReturn<ConsulServerDto>> Put()
-        {
-            var dto = new ConsulServerDto
-            {
-                BoolDto = true,
-                IntDto = 300,
-                StringDto = $"this is Web.Consul ConsulServerController.Put method "
-            };
-
-            return await _consulServer.ServicePutAsync<ConsulServerDto, ConsulServerDto>(RequestType.Http, serverName, "/RESTfulApi", dto);
-        }
-
-        [HttpDelete]
-        public async Task<ConsulReturn<string>> Delete()
-        {
-            return await _consulServer.ServiceDeleteAsync<string>(RequestType.Http, serverName, "/RESTfulApi?id=2");
-        }
+        return _consulServer.ServicePostAsync<string, ConsulServerDto>(
+            RequestScheme.Http, ServerName, "/RESTfulApi", dto, cancellationToken: cancellationToken);
     }
+
+    [HttpPut]
+    public Task<ServiceCallResult<ConsulServerDto>> Put(CancellationToken cancellationToken)
+    {
+        var dto = new ConsulServerDto
+        {
+            BoolDto = true,
+            IntDto = 300,
+            StringDto = "this is Web.Consul ConsulServerController.Put method"
+        };
+
+        return _consulServer.ServicePutAsync<ConsulServerDto, ConsulServerDto>(
+            RequestScheme.Http, ServerName, "/RESTfulApi", dto, cancellationToken: cancellationToken);
+    }
+
+    [HttpDelete]
+    public Task<ServiceCallResult<string>> Delete(CancellationToken cancellationToken)
+        => _consulServer.ServiceDeleteAsync<string>(
+            RequestScheme.Http, ServerName, "/RESTfulApi?id=2", cancellationToken: cancellationToken);
 }
