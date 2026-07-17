@@ -13,7 +13,7 @@
 
 ## 🌍 Language
 
-- 🇨🇳 Chinese: [README.md](README.md)
+- 🇨🇳 Chinese: [README.md](https://github.com/RockyWang0521/EasyCore.Consul/blob/master/README.md)
 - 🇺🇸 **English (this document)**
 
 ---
@@ -95,11 +95,11 @@ EasyCore.Consul/
 
 ### 2.1 🖼️ Component Diagram
 
-![architecture-en](https://gitee.com/wzhy-0521/easy-core.-consul/raw/master/docs/svg/architecture-en.svg)
+![architecture-en](https://raw.githubusercontent.com/RockyWang0521/EasyCore.Consul/master/docs/svg/architecture-en.svg)
 
 ### 2.2 🔁 Service Lifecycle
 
-![sequence-en](https://gitee.com/wzhy-0521/easy-core.-consul/raw/master/docs/svg/sequence-en.svg)
+![sequence-en](https://raw.githubusercontent.com/RockyWang0521/EasyCore.Consul/master/docs/svg/sequence-en.svg)
 
 ### 2.3 📜 Data Flow
 
@@ -336,7 +336,7 @@ Call chain: `Health.Service` → load balancer → `IHttpClientFactory`. By defa
 
 ## 12. 🧪 Demo Projects
 
-![demo-topology-en](https://gitee.com/wzhy-0521/easy-core.-consul/raw/master/docs/svg/demo-topology-en.svg)
+![demo-topology-en](https://raw.githubusercontent.com/RockyWang0521/EasyCore.Consul/master/docs/svg/demo-topology-en.svg)
 
 | Project | Port | Role | Command |
 |---|---|---|---|

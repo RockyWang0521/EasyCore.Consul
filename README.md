@@ -14,7 +14,7 @@
 ## 🌍 Language
 
 - 🇨🇳 **中文（当前文档）**
-- 🇺🇸 English: [README.en.md](README.en.md)
+- 🇺🇸 English: [README.en.md](https://github.com/RockyWang0521/EasyCore.Consul/blob/master/README.en.md)
 
 ---
 
@@ -95,11 +95,11 @@ EasyCore.Consul/
 
 ### 2.1 🖼️ 组件关系图
 
-![architecture-cn](https://gitee.com/wzhy-0521/easy-core.-consul/raw/master/docs/svg/architecture-cn.svg)
+![architecture-cn](https://raw.githubusercontent.com/RockyWang0521/EasyCore.Consul/master/docs/svg/architecture-cn.svg)
 
 ### 2.2 🔁 服务生命周期
 
-![sequence-cn](https://gitee.com/wzhy-0521/easy-core.-consul/raw/master/docs/svg/sequence-cn.svg)
+![sequence-cn](https://raw.githubusercontent.com/RockyWang0521/EasyCore.Consul/master/docs/svg/sequence-cn.svg)
 
 ### 2.3 📜 数据流（文字版）
 
@@ -336,7 +336,7 @@ return Ok(result.Values);
 
 ## 12. 🧪 Demo 项目
 
-![demo-topology-cn](https://gitee.com/wzhy-0521/easy-core.-consul/raw/master/docs/svg/demo-topology-cn.svg)
+![demo-topology-cn](https://raw.githubusercontent.com/RockyWang0521/EasyCore.Consul/master/docs/svg/demo-topology-cn.svg)
 
 | 项目 | 端口 | 角色 | 命令 |
 |---|---|---|---|
