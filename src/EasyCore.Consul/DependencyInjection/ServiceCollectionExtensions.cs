@@ -98,44 +98,4 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IConsulServer, ConsulServer>();
         return services;
     }
-
-    #region Backward-compatible aliases
-
-    /// <inheritdoc cref="AddEasyCoreConsul(IHostApplicationBuilder, Action{ConsulOptions}?)"/>
-    public static IServiceCollection EasyCoreConsul(
-        this IHostApplicationBuilder builder,
-        string[]? args = null,
-        Action<ConsulOptions>? configure = null)
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-
-        if (args is { Length: > 0 })
-        {
-            builder.Configuration.AddCommandLine(args);
-            builder.Configuration.AddEnvironmentVariables();
-        }
-
-        return builder.AddEasyCoreConsul(configure);
-    }
-
-    /// <inheritdoc cref="AddEasyCoreConsul(IHostApplicationBuilder, Action{ConsulOptions}?)"/>
-    public static IServiceCollection EasyCoreConsul(this IHostApplicationBuilder builder)
-        => builder.AddEasyCoreConsul();
-
-    /// <inheritdoc cref="AddEasyCoreConsul(IServiceCollection, IConfiguration, Action{ConsulOptions}?)"/>
-    public static IServiceCollection EasyCoreConsul(
-        this IServiceCollection services,
-        IConfiguration configuration)
-        => services.AddEasyCoreConsul(configuration);
-
-    public static IServiceCollection EasyCoreConsulCache(this IServiceCollection services)
-        => services.AddEasyCoreConsulCache();
-
-    public static IServiceCollection EasyCoreConsulLocking(this IServiceCollection services)
-        => services.AddEasyCoreConsulLocking();
-
-    public static IServiceCollection EasyCoreConsulServer(this IServiceCollection services)
-        => services.AddEasyCoreConsulServer();
-
-    #endregion
 }

@@ -6,8 +6,8 @@
 ![C#](https://img.shields.io/badge/C%23-12-239120?logo=csharp)
 ![Consul](https://img.shields.io/badge/Consul-1.7+-e03875?logo=consul&logoColor=white)
 ![Features](https://img.shields.io/badge/Features-Register%20%7C%20KV%20%7C%20Lock%20%7C%20Invoke-blueviolet)
-![License](https://img.shields.io/badge/License-MIT%20OR%20Apache--2.0-yellow)
-![Version](https://img.shields.io/badge/Version-8.1.0-blue)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+![Version](https://img.shields.io/badge/Version-8.3.0-blue)
 
 ---
 
@@ -404,7 +404,7 @@ A: Ocelot 通过 `Ocelot.Provider.Consul` 自行发现；本库负责业务侧�
 
 ## 16. 📄 License
 
-MIT OR Apache-2.0 — 详见 [LICENSE](LICENSE)。
+MIT — 详见 [LICENSE](LICENSE)。
 
 ---
 
