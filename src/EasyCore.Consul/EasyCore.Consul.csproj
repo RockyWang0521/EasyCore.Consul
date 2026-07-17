@@ -16,7 +16,7 @@
     <RepositoryType>git</RepositoryType>
     <Authors>WZHY</Authors>
     <Description>Production-ready .NET Consul integration: service registration, discovery, KV store, distributed locking, and inter-service invocation.</Description>
-    <PackageProjectUrl>https://gitee.com/wzhy-0521/easy-core.-consul.git</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/RockyWang0521/EasyCore.Consul</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT OR Apache-2.0</PackageLicenseExpression>
     <PackageTags>consul;microservice;service-discovery;distributed-lock;kv</PackageTags>

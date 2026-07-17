@@ -30,6 +30,6 @@
   <path d="M260 215 H340" stroke="#3ecf8e" stroke-width="2"/>
   <path d="M520 170 H600" stroke="#3d9cf0" stroke-width="2"/>
 
-  <text x="40" y="310" fill="#8fa3bc" font-family="Segoe UI, Arial" font-size="12">Suggested order: Consul Agent ’ Server ’ Web.Consul ’ (optional) Ocelot</text>
+  <text x="40" y="310" fill="#8fa3bc" font-family="Segoe UI, Arial" font-size="12">Suggested order: Consul Agent -&gt; Server -&gt; Web.Consul -&gt; (optional) Ocelot</text>
   <text x="40" y="335" fill="#8fa3bc" font-family="Segoe UI, Arial" font-size="12">UI: http://127.0.0.1:8500 · Health: /healthCheck</text>
 </svg>
